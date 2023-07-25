@@ -64,4 +64,73 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
     }  }
 
 ```
-
+### Script to get City, State, Country with considering Pincode:
+```
+ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+   if (isLoading || newValue === '') {
+      return;
+   }
+   var pincode = g_form.getReference("u_pin", setcity);
+    function setcity(pincode) {
+        g_form.setValue("u_city", pincode.u_city); //your city field
+        g_form.setValue("u_string_14", pincode.u_state); //your state field
+      g_form.setValue("u_country", pincode.u_country); //your country field
+    } 
+}
+```
+### Script to validate Number length:
+```
+function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+   if (isLoading || newValue === '') {
+      return;
+   }
+	var regexp = /^\d{6}$/;
+    if (!regexp.test(newValue)) {
+        g_form.setValue('u_pin', ''); // pincode length is validate here // enter your number field
+        g_form.showFieldMsg('u_pin', 'Please enter a 6 digit pincode', "error");
+    }  
+}
+```
+### Script to get Age using DOB
+  - `Apply Script include`
+      ```
+      var ageScript = Class.create();
+      ageScript.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+         checkAge: function() {
+             var dob = this.getParameter('sysparam_id'); //param from client script
+             var today = new GlideDateTime();
+             var todayYear = today.getYearLocalTime();
+             var bday = new GlideDateTime(dob.toString());
+             var bdayYear = bday.getYearLocalTime();
+             var age = todayYear - bdayYear;
+        return age;
+    },
+    type: 'ageScript'
+     });
+      ```
+ - `Apply On Change Client Script`
+      ```
+      function onChange(control, oldValue, newValue, isLoading, isTemplate) {
+    if (isLoading || newValue === '') {
+        return;
+    }
+    var ga = new GlideAjax('ageScript');
+    ga.addParam('sysparm_name', 'checkAge');
+    ga.addParam('sysparam_id', newValue);
+    ga.getXML(Process);
+   }
+   function Process(response) {
+    var answer = response.responseXML.documentElement.getAttribute("answer");
+    //alert(answer);
+    var a = parseInt(answer);
+    //alert(a);
+    if (a <= 3) {
+        g_form.setValue('u_age', '');
+        g_form.showFieldMsg('u_age', 'admission avalilable only for above 3 years chidren ', "error");
+    } else if (a >= 18) {
+        g_form.setValue('u_age', '');
+        g_form.showFieldMsg('u_age', 'admission avalilable only for below 18 years students ', "error");
+    } else if (a > 3 && a < 18) {
+        g_form.setValue("u_age", a);
+    }}
+      ```
