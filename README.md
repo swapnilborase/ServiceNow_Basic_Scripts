@@ -49,6 +49,41 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
 
             }}
 ```
+### Script to Validate Date Field `Past Date should not select`
+ - `Apply Script Include`
+ 	```
+  	Name : CheckDate
+	Client callable : true
+	Script :
+		var CheckDate = Class.create();
+		CheckDate.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+		chkCatDate : function() {
+		var start = this.getParameter('sysparm_date');
+		var currDay = gs.now();
+			if(start < currDay){
+				return false;
+				}else
+			{ return true; } } });
+      ```
+  - `Apply OnChange Client Script`
+    ```
+    	function onChange(control, oldValue, newValue, isLoading)
+	{
+		if(isLoading){ return; }
+	if(newValue != ''){
+	var ga = new GlideAjax('CheckDate');
+	ga.addParam('sysparm_name', 'chkCatDate');
+	ga.addParam('sysparm_date',g_form.getValue('date_time'));
+	ga.getXML(DatParse);
+	}
+	function DatParse(response){
+	var answer = response.responseXML.documentElement.getAttribute("answer");
+	if(answer == 'false'){
+		alert("Date cannot exist in past.");
+		g_form.setValue('date_time', ''); // Empty the variable.
+		}}}		
+    ```
+
 ### Script to validate UID:
 ```
 function onChange(control, oldValue, newValue, isLoading, isTemplate) {
@@ -134,3 +169,4 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
         g_form.setValue("u_age", a);
     }}
       ```
+### 
