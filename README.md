@@ -1,6 +1,6 @@
 # SNOW_Basic_Scripts
 
- ###Script to make one fied value attach to another field value. eg: Make Temporary address similer to Permanent Address
+ ### Script to make one fied value attach to another field value. eg: Make Temporary address similer to Permanent Address
   - On Change Client Script
   - function onChange(control, oldValue, newValue, isLoading, isTemplate) {
       if (isLoading || newValue === '') {
