@@ -192,7 +192,7 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
     }}
       ```
 
-   - `Script to Re-Trigger the Workflow `
+### Script to Re-Trigger the Workflow
    
    ```
    var gr = new GlideRecord("sc_req_item"); //table name
@@ -203,3 +203,18 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
 	}
 
    ```
+
+### Script to Cancel/ Stop Workflow
+```
+var gr = new GlideRecord("sc_req_item"); //table name
+gr.addQuery("number", "RITM001"); //number or sys_id
+gr.query();
+if (gr.next()) {
+	// cancel old running workflow
+	var flows = new Workflow().getRunningFlows(gr);
+	while(flows.next()) {
+		new Workflow().cancelContext(flows);
+	}  
+}
+```
+ 
