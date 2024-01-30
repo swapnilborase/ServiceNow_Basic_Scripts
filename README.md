@@ -217,4 +217,122 @@ if (gr.next()) {
 	}  
 }
 ```
- 
+### Culculate Custom variable Value using bunch of question
+```
+function onSubmit() {
+    //Type appropriate comment here, and begin script below
+    var value1 = g_form.getValue('u_choice_1');
+    var value2 = g_form.getValue('u_choice_2');
+    var value3 = g_form.getValue('u_choice_3');
+    var value4 = g_form.getValue('u_choice_4');
+    var value5 = g_form.getValue('u_choice_5');
+    var value6 = g_form.getValue('u_choice_6');
+
+    if (value1 == "")
+    {
+        value1 = 0;
+    }
+    if (value2 == "")
+    {
+        value2 = 0;
+    }
+    if (value3 == "")
+    {
+        value3 = 0;
+    }
+    if (value4 == "")
+    {
+        value4 = 0;
+    }
+    if (value5 == "")
+    {
+        value5 = 0;
+    }
+    if (value6 == "")
+    {
+        value6 = 0;
+    }
+
+    var number1 = parseInt(value1);
+    var number2 = parseInt(value2);
+    var number3 = parseInt(value3);
+    var number4 = parseInt(value4);
+    var number5 = parseInt(value5);
+    var number6 = parseInt(value6);
+
+    var total = number1 + number2 + number3 + number4 + number5 + number6;
+   
+    if (total == 8 || total == 7)
+        g_form.setValue('risk', '2'); // high
+
+    else if (total == 6 || total == 5 || total == 4)
+        g_form.setValue('risk', '3'); //moderate
+    else if (total == 3 || total == 2 || total == 1 || total == 0)
+        g_form.setValue('risk', '4'); //low
+}
+```
+### Auto-Populate User / Caller Details
+
+- `Script Include`
+  ```
+    var contact = '';
+        var user = this.getParameter('sysparm_user');
+        var gr1 = new GlideRecord('sys_user');
+        gr1.addQuery('sys_id', user);
+        gr1.query();
+        if (gr1.next()) {
+            contact = gr1.mobile_phone;
+        }
+        return contact;
+    },
+    PopulateEmployee: function() {
+        var obj = {};
+        var id = this.getParameter('sysparm_user');
+        var gr = new GlideRecord('sys_user');
+        gr.addQuery('sys_id', id);
+        gr.query();
+        if (gr.next()) {
+            obj['title'] = gr.getValue('title'); //User table fields
+            obj['department'] = gr.getValue('department');  //User table fields
+            obj['location'] = gr.getValue('location');  //User table fields
+            obj['cost_centre'] = gr.getValue('cost_center');  //User table fields
+            obj['manager'] = gr.getValue('manager');  //User table fields
+            obj['mobile_phone'] = gr.getValue('mobile_phone');  //User table fields
+            obj['email'] = gr.getValue('email');  //User table fields
+            obj['user_name'] = gr.getValue('user_name');  //User table fields
+        }
+        return JSON.stringify(obj);
+    },
+    PopulateOwner: function() {
+        var abc = {};
+        var app_id = this.getParameter('sysparm_user');
+        var app = new GlideRecord('cmdb_ci_appl');
+        app.addQuery('sys_id',app_id);
+        app.query();
+        if (app.next()) {
+            abc['owned_by'] = gr.getValue('owned_by');
+        }
+        return JSON.stringify(abc);
+    },
+  ```
+  - `Client Script - Create both OnChange & OnLoad`
+    ```
+        //Type appropriate comment here, and begin script below
+    var ga = new GlideAjax('Populate_Contact_Number');
+    ga.addParam('sysparm_name', 'PopulateEmployee');
+    ga.addParam('sysparm_user', g_form.getValue('ea_requested_for')); // give here your variable name
+    ga.getXMLAnswer(function(answer) {
+        if (answer != 'null') {
+            var parser = JSON.parse(answer);
+            alert('value of'+ answer);
+            g_form.setValue('user_name',parser.user_name); // give here your variable name
+            g_form.setValue('ea_requested_for_email', parser.email);  // give here your variable name
+            g_form.setValue('manager', parser.manager);  // give here your variable name
+            g_form.setValue('title', parser.title);  // give here your variable name
+            g_form.setValue('location', parser.location);  // give here your variable name
+            g_form.setValue('mobile_phone', parser.mobile_phone);  // give here your variable name
+            g_form.setValue('department', parser.department);  // give here your variable name
+
+        }
+    });
+    ```
