@@ -191,3 +191,15 @@ function onChange(control, oldValue, newValue, isLoading, isTemplate) {
         g_form.setValue("u_age", a);
     }}
       ```
+
+   - `Script to Re-Trigger the Workflow `
+   
+   ```
+   var gr = new GlideRecord("sc_req_item"); //table name
+	gr.addQuery("sys_id", "a990135997cc8a10d9d936c71153af40"); //sys_id
+	gr.query();
+	if (gr.next()) {
+		new Workflow().restartWorkflow(gr);
+	}
+
+   ```
